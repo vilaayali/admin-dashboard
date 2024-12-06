@@ -21,7 +21,7 @@ export const AuthContextProvider = ({ children }) => {
     //Getiing Categories from local storage
     const getCategoriesFromLocal = () => {
         const categoriesSaved = localStorage.getItem("categories")
-        return categoriesSaved ? JSON.parse(categoriesSaved) : [];
+        return categoriesSaved ? JSON.parse(categoriesSaved) : "";
     }
 
     // UseSate Inititlizations
@@ -29,8 +29,7 @@ export const AuthContextProvider = ({ children }) => {
     //product State
     const [apiProducts, setApiProducts] = useState(getProductFromLocal)
     //Categories State;
-    const [apiCategories, setApiCategories] = useState(getCategoriesFromLocal)
-
+    const [apiCategories, setApiCategories] = useState(getCategoriesFromLocal);
 
 
 
@@ -62,13 +61,12 @@ export const AuthContextProvider = ({ children }) => {
         }
     }
 
+
     // Fetch api For Categories
     const fetchCategoriesApi = async () => {
-
         const noCatData = getCategoriesFromLocal()
-
         if (noCatData) {
-            setApiCategories(JSON.parse(noCatData));
+            setApiCategories(noCatData);
             return;
         }
         let baseUrl = "https://fakestoreapi.com/products/categories"
