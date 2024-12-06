@@ -39,10 +39,6 @@ function SingIn() {
 
     // console.log("SignIn Token: ", data);
     console.log("login: ", isLogin);
-
-
-
-
     const providers = [
         { id: 'custom', button: true }
     ];
