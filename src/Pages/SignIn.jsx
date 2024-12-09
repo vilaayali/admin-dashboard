@@ -11,31 +11,16 @@ import { useTheme } from '@mui/material/styles';
 
 function SingIn() {
     let navigate = useNavigate()
-    const [isLogin, setIsLogin] = useState(false)
-    const { saveToken, token } = useAuth()
+    // const [isLogin, setIsLogin] = useState(false)
+    const { saveToken, token, fetchSignInApi, isLogin } = useAuth()
 
     useEffect(() => {
         if (isLogin && token) {
             navigate("/dashboard");
         } else {
-            navigate("/login");
+            navigate("");
         }
-    }, [isLogin])
-
-    const fetchSignInApi = async () => {
-        let baseUrl = 'https://fakestoreapi.com/auth/login'
-        try {
-            const response = await axios.post(baseUrl, {
-                username: 'mor_2314',
-                password: "83r5^_"
-            })
-            const getToken = response.data.token;
-            saveToken(getToken);
-            setIsLogin(true)
-        } catch (err) {
-            alert("Wrong Username and pasword ", err);
-        }
-    }
+    }, [isLogin, token, navigate])
 
     // console.log("SignIn Token: ", data);
     console.log("login: ", isLogin);

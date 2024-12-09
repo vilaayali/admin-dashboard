@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
             <Outlet />
         </>
     ) : (
-        <Navigate to="/login" />
+        < Navigate to="/product" />
     );
 };
 
