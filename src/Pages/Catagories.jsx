@@ -4,6 +4,8 @@ import Spinner from "../Component/progressSpinner";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Card, CardContent, CardMedia, CardActions, Button, Typography, Grid } from '@mui/material';
 // import { CardContent, CardMedia, CardActions, Button, Typography, Grid } from '@mui/material';
 import { useAuth } from '../authContext/authContext';
+import { useNavigate } from 'react-router';
+
 
 
 
@@ -18,14 +20,12 @@ function Categories() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     // const [sortOption, setSortOption] = useState('all-products')
 
-
-
-
     //handel Categorey
     const handelCategorey = (category) => {
         SubCategoriesApi(category)
         setSelectedCategorey(category)
-        setIsDialogOpen(true);
+        // setIsDialogOpen(true);
+
     }
 
     const handelDialogClose = () => {

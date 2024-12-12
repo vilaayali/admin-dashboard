@@ -6,11 +6,15 @@ import { useAuth } from '../authContext/authContext';
 import { FormControl, InputLabel, Select, MenuItem, DialogActions, Button } from '@mui/material';
 import Popup from './Popup';
 import { Navigate, useNavigate } from 'react-router';
+import CartSiderBar from "../Pages/CartSideBar"
+import { Spinner } from 'react-bootstrap';
 
 
 function InPageNavBar() {
-    const { alphabeticalOrder, limit, handleAlphabeticalOrderChange, handleLimitChange, apiProducts, setApiProducts, fetchSignInApi, token, navigateToLoginPage } = useAuth();
+    const { alphabeticalOrder, limit, handleAlphabeticalOrderChange, handleLimitChange, apiProducts, setApiProducts, fetchCartApi, token, navigateToLoginPage, role, setToken, setRole } = useAuth();
+
     const [showPop, setShowPop] = useState(false);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const handleAddProduct = (newProduct) => {
@@ -21,7 +25,24 @@ function InPageNavBar() {
     };
 
 
+    useEffect(() => {
+        const storedToken = localStorage.getItem('Token');
+        const storedRole = localStorage.getItem('role');
 
+        if (storedToken) {
+            setToken(storedToken);
+        }
+
+        if (storedRole) {
+            setRole(storedRole);
+        }
+        setLoading(false)
+    }, []);
+
+
+    if (loading) {
+        return <Spinner />;
+    }
 
     return (
         <Box sx={{ width: '100%', bgcolor: 'background.paper', padding: 2 }}>
@@ -56,7 +77,7 @@ function InPageNavBar() {
                     <DialogActions>
 
 
-                        {token ? <Button
+                        {token && role === "admin" ? <Button
                             style={{
                                 borderRadius: 35,
                                 backgroundColor: "#191950",
@@ -71,7 +92,7 @@ function InPageNavBar() {
                                 variant="contained"
                                 color="success"
                                 onClick={() => navigateToLoginPage(navigate)}>
-                                Login Now
+                                Chosses Role
                             </Button>}
 
                         <Popup
@@ -88,7 +109,10 @@ function InPageNavBar() {
                                 { name: "image", label: "Upload Image", type: "file" },
                             ]}
                         />
-
+                        <Button
+                            variant="outlined">
+                            <CartSiderBar />
+                        </Button>
                     </DialogActions>
                 </Box>
             </Tabs>

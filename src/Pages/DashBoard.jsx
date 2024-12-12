@@ -30,7 +30,7 @@ export default function ClippedDrawer() {
 
     useEffect(() => {
         if (!token) {
-            navigate('/product');
+            navigate('/');
         }
     }, [token]);
 
@@ -40,7 +40,6 @@ export default function ClippedDrawer() {
         { text: 'Products', path: '/dashboard/product' },
         { text: 'Categories', path: '/dashboard/catagories' },
         { text: 'Log Out', onclick: logOut },
-        // { text: 'Filter', path: '/filter' },
     ];
 
     return (
@@ -49,7 +48,7 @@ export default function ClippedDrawer() {
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <Typography variant="h6" noWrap component="div">
-                        Admin Panel
+                        Admin Dashboard
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -98,7 +97,6 @@ export default function ClippedDrawer() {
                         ))}
                     </List>
                     <Divider />
-                    {/* <button onClick={logOut}>LogOut</button> */}
                 </Box>
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

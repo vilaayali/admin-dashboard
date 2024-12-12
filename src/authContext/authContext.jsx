@@ -40,7 +40,25 @@ export const AuthContextProvider = ({ children }) => {
     const [selectedId, setSelectedId] = useState(null);
     //signin State
     const [isLogin, setIsLogin] = useState(false)
+    //Cart State 
+    const [cartProduct, setCartProduct] = useState([]);
+    //Role
+    const [role, setRole] = useState(null);
 
+
+
+    //UserLocal Storage
+    const UserSettingData = (navigate) => {
+        localStorage.setItem("role", "user");
+        setRole("user");
+        navigate('/login')
+    }
+    //UserLocal Storage
+    const adminSettingData = (navigate) => {
+        localStorage.setItem("role", "admin");
+        setRole("admin");
+        navigate('/login')
+    }
 
 
     // Fetch SignIn Api
@@ -132,15 +150,22 @@ export const AuthContextProvider = ({ children }) => {
 
     //LogOut Functionality
     const handelLogOut = (navigate) => {
-        setToken(null)
         localStorage.removeItem("Token")
+        setToken(null);
+        navigate('/');
         localStorage.removeItem("categories")
-        navigate('/product');
+        localStorage.removeItem("products")
+        localStorage.removeItem("role")
     }
 
     // navigateToLoginPage
     const navigateToLoginPage = (navigate) => {
-        navigate('/');
+        setToken(null)
+        localStorage.removeItem("products")
+        localStorage.removeItem("Token")
+        localStorage.removeItem("role")
+        navigate("/");
+        setApiProducts('');
     };
 
 
@@ -181,10 +206,87 @@ export const AuthContextProvider = ({ children }) => {
     };
 
 
+    // //Fetching Cart api 
+    // const fetchCartApi = async () => {
+    //     let baseUrl = `https://fakestoreapi.com/carts`
+    //     try {
+    //         const response = await axios.get(baseUrl);
+    //         const resData = Array.isArray(response.data) ? response.data : [];
+    //         setCartProduct(resData)
+    //         console.log(cartProduct);
+
+    //     } catch (err) {
+    //         console.log("Error in fetching Categories api ", err);
+
+    //     }
+    // }
+
+
+    const addToCart = async (product) => {
+        try {
+            const payload = {
+                userId: 5,
+                date: new Date(),
+                products: [
+                    {
+                        productId: product.id,
+                        quantity: 1,
+                    },
+                ],
+            };
+
+            console.log("date", payload.date);
+
+            // Make a POST request to the fake store API
+            const response = await axios.post('https://fakestoreapi.com/carts', payload);
+            const newCartItem = response.data;
+
+            // Update the cart state
+            setCartProduct((prev) => {
+                const existing = prev.find((item) => item.id === product.id);
+                if (existing) {
+                    // Increment quantity if the product exists
+                    return prev.map((item) =>
+                        item.id === product.id
+                            ? { ...item, quantity: item.quantity + 1 }
+                            : item
+                    );
+                }
+                // Add the new product
+                return [...prev, { ...product, quantity: 1 }];
+            });
+
+            console.log('Item added to cart:', newCartItem);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+        }
+    };
+
+
+    //delete data from cart
+    const removeFromCart = async (productId) => {
+        const deletApiCall = `https://fakestoreapi.com/carts/${productId}`
+        try {
+            await axios.delete(deletApiCall)
+            const updatedDeleteData = (prev) =>
+                prev.filter((item) => item.id !== productId)
+            setCartProduct(updatedDeleteData);
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+
 
     return (<AuthContext.Provider value={
 
         {
+            //User data
+            UserSettingData,
+            adminSettingData,
+            role,
+            setRole,
+
             //SignIn Api
             fetchSignInApi,
             isLogin,
@@ -192,6 +294,7 @@ export const AuthContextProvider = ({ children }) => {
             // For Token
             saveToken,
             token,
+            setToken,
 
             // for ProductAPI
             apiProducts,
@@ -219,6 +322,12 @@ export const AuthContextProvider = ({ children }) => {
 
             //Delete Function
             handelDelete,
+
+            //CartApi 
+            // fetchCartApi,
+            cartProduct,
+            removeFromCart,
+            addToCart,
         }
     }>
         {children}

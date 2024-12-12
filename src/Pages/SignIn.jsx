@@ -17,8 +17,6 @@ function SingIn() {
     useEffect(() => {
         if (isLogin && token) {
             navigate("/dashboard");
-        } else {
-            navigate("");
         }
     }, [isLogin, token, navigate])
 

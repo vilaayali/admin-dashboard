@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Card,
+    Dialog, DialogTitle, DialogContent, DialogActions, Card,
     CardContent,
     CardMedia,
     CardActions,
@@ -20,9 +16,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import InPageNavBar from '../Component/InPageNavBar';
 import { green } from '@mui/material/colors';
+import { useNavigate } from 'react-router';
 
 function Product() {
-    const { handelDelete, apiProducts, fetchProductApi, sortData, setApiProducts, token } = useAuth();
+    const { handelDelete, apiProducts, fetchProductApi, sortData, setApiProducts, token, role } = useAuth();
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -30,14 +27,25 @@ function Product() {
 
     useEffect(() => {
         if (!apiProducts.length) fetchProductApi();
-    }, [fetchProductApi, apiProducts]);
+    }, [fetchProductApi, apiProducts, role, token]);
 
     const displayData = sortData.length ? sortData : apiProducts;
 
-    const handleCardClick = (product) => {
-        setSelectedProduct(product);
+    const navigate = useNavigate();
+
+    // Dynamic Card Route
+    const handleCardClick = (productID) => {
+        setSelectedProduct(productID);
         setIsDialogOpen(true);
+        if (role === "admin") {
+            navigate(`/dashboard/product/${productID}`);
+        }
+        if (role === "user") {
+            navigate(`/product/${productID}`);
+        }
+        console.log('produvt id', selectedProduct)
     };
+
 
     const handleEditClick = (product) => {
         setEditProduct({ ...product });
@@ -57,6 +65,9 @@ function Product() {
         localStorage.setItem('products', JSON.stringify(updatedProducts));
         handleEditClose();
     };
+
+    console.log("Product Token", token);
+    console.log('Selected Product', selectedProduct)
 
     return (
         <Box sx={{ minHeight: '100vh', backgroundColor: '#fafafa' }}>
@@ -88,13 +99,11 @@ function Product() {
                                     </CardContent>
                                     {/* Card Action Button */}
                                     <CardActions sx={{ justifyContent: 'center' }}>
-                                        {/* Open button is always accessible */}
-                                        <Button onClick={() => handleCardClick(product)} color="primary" variant="outlined">
+                                        <Button onClick={() => handleCardClick(product.id)} color="primary" variant="outlined">
                                             Open
                                         </Button>
 
-                                        {/* Conditionally render Edit and Delete buttons based on token */}
-                                        {token && (
+                                        {role === "admin" && (
                                             <>
                                                 <Button
                                                     variant="outlined"
@@ -122,111 +131,6 @@ function Product() {
                     <Spinner />
                 )}
             </Container>
-
-            {/* Product Details Dialog */}
-            <Dialog
-                open={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
-                fullWidth
-                maxWidth="md"
-                sx={{
-                    '& .MuiDialog-paper': {
-                        borderRadius: 3,
-                        boxShadow: 5,
-                    },
-                }}
-            >
-                <DialogTitle
-                    sx={{
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        backgroundColor: 'primary.main',
-                        color: 'white',
-                    }}
-                >
-                    Product Details
-                </DialogTitle>
-                <DialogContent
-                    sx={{
-                        display: 'flex',
-                        flexDirection: { xs: 'column', md: 'row' },
-                        alignItems: 'center',
-                        gap: 3,
-                        p: 3,
-                    }}
-                >
-                    {selectedProduct && (
-                        <>
-                            <img
-                                src={selectedProduct.image}
-                                alt={selectedProduct.title}
-                                style={{
-                                    width: '100%',
-                                    maxWidth: '300px',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
-                                }}
-                            />
-                            <Box sx={{ flex: 1 }}>
-                                <Typography
-                                    variant="h5"
-                                    sx={{
-                                        fontWeight: 'bold',
-                                        mb: 2,
-                                        color: 'primary.main',
-                                        textAlign: { xs: 'center', md: 'left' },
-                                    }}
-                                >
-                                    {selectedProduct.title}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    sx={{ mb: 2, textAlign: { xs: 'center', md: 'left' } }}
-                                >
-                                    {selectedProduct.description}
-                                </Typography>
-                                <Typography
-                                    variant="h6"
-                                    sx={{
-                                        mt: 2,
-                                        fontWeight: 'bold',
-                                        color: 'success.main',
-                                        textAlign: { xs: 'center', md: 'left' },
-                                    }}
-                                >
-                                    Price: ${selectedProduct.price}
-                                </Typography>
-                            </Box>
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions
-                    sx={{
-                        justifyContent: 'center',
-                        py: 2,
-                        borderTop: '1px solid #f0f0f0',
-                    }}
-                >
-                    <Button
-                        onClick={() => setIsDialogOpen(false)}
-                        variant="contained"
-                        color="primary"
-                        sx={{ px: 4, borderRadius: 2 }}
-                    >
-                        Close
-                    </Button>
-                    <Button
-                        // onClick={}
-                        variant="contained"
-                        color="success"
-                        sx={{ px: 4, borderRadius: 2 }}
-                    >
-                        Add to Cart
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
             {/* Edit Product Dialog */}
             <Dialog
                 open={isEditDialogOpen}
